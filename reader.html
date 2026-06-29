@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Read — Mystic Tales</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="logo">✦ Mystic Tales</a>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="library.html">Library</a></li>
+      <li><a href="create.html">Create</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+  </nav>
+
+  <!-- BACK BUTTON -->
+  <div style="max-width:780px; margin:0 auto; padding:1.5rem 2rem 0;">
+    <a href="library.html" style="color:#0d9488; text-decoration:none; font-size:0.9rem; font-weight:600;">← Back to Library</a>
+  </div>
+
+  <!-- STORY CONTAINER -->
+  <section style="max-width:780px; margin:0 auto; padding:2rem;">
+    <div id="story-content">
+      <div class="loading">Opening your story...</div>
+    </div>
+  </section>
+
+  <footer>
+    <p>✦ Mystic Tales — Where stories come alive ✦</p>
+  </footer>
+
+  <style>
+    #story-header {
+      text-align: center;
+      padding: 2rem;
+      background: linear-gradient(135deg, #ccfbf1, #e0f2fe);
+      border-radius: 20px;
+      margin-bottom: 2rem;
+    }
+    #story-header .cover-emoji {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+    #story-header h1 {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      color: #134e4a;
+      margin-bottom: 0.5rem;
+    }
+    #story-header .meta {
+      color: #5f9ea0;
+      font-size: 0.9rem;
+    }
+    #story-body {
+      background: #ffffff;
+      border: 1px solid rgba(13,148,136,0.1);
+      border-radius: 20px;
+      padding: 2.5rem;
+      font-size: 1.15rem;
+      line-height: 1.9;
+      color: #134e4a;
+      box-shadow: 0 2px 12px rgba(13,148,136,0.06);
+    }
+    .font-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      justify-content: flex-end;
+    }
+    .font-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(13,148,136,0.3);
+      background: transparent;
+      color: #0d9488;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Nunito', sans-serif;
+    }
+    .font-btn:hover {
+      background: #0d9488;
+      color: white;
+    }
+    .read-aloud-btn {
+      padding: 6px 16px;
+      border-radius: 50px;
+      border: 1.5px solid rgba(249,115,22,0.4);
+      background: transparent;
+      color: #f97316;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .read-aloud-btn:hover, .read-aloud-btn.speaking {
+      background: #f97316;
+      color: white;
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script>
+    const emojis = { fantasy: '🌟', magic: '✨', wonder: '🌊', adventure: '⚔️' };
+    const ageLabels = { all: 'All ages', toddler: 'Ages 2–4', early: 'Ages 5–7', middle: 'Ages 8–12' };
+    let fontSize = 1.15;
+    let speaking = false;
+
+    async function loadStory() {
+      const id = new URLSearchParams(window.location.search).get('id');
+      if (!id) {
+        document.getElementById('story-content').innerHTML = '<p class="empty">No story selected. <a href="library.html" style="color:#0d9488">Go to Library</a></p>';
+        return;
+      }
+
+      const { data, error } = await db
+        .from('stories')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error || !data) {
+        document.getElementById('story-content').innerHTML = '<p class="empty">Story not found. <a href="library.html" style="color:#0d9488">Go to Library</a></p>';
+        return;
+      }
+
+      document.title = `${data.title} — Mystic Tales`;
+
+      document.getElementById('story-content').innerHTML = `
+        <div id="story-header">
+          <span class="cover-emoji">${emojis[data.genre] || '📖'}</span>
+          <h1>${data.title}</h1>
+          <p class="meta">By ${data.author} &nbsp;·&nbsp; <span class="age-badge age-${data.age_group}">${ageLabels[data.age_group]}</span></p>
+        </div>
+
+        <div class="font-controls">
+          <span style="font-size:0.85rem; color:#5f9ea0;">Text size:</span>
+          <button class="font-btn" onclick="changeFont(-0.1)">A−</button>
+          <button class="font-btn" onclick="changeFont(0.1)">A+</button>
+          <button class="read-aloud-btn" id="read-btn" onclick="toggleReadAloud('${data.content.replace(/'/g, "\\'")}')">🔊 Read aloud</button>
+        </div>
+
+        <div id="story-body">${data.content}</div>
+
+        <div style="text-align:center; margin-top:2rem; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+          <a href="library.html" class="btn btn-outline">← More Stories</a>
+          <a href="create.html" class="btn btn-primary">Create Your Own ✦</a>
+        </div>
+      `;
+    }
+
+    function changeFont(delta) {
+      fontSize = Math.min(1.6, Math.max(0.9, fontSize + delta));
+      const body = document.getElementById('story-body');
+      if (body) body.style.fontSize = fontSize + 'rem';
+    }
+
+    function toggleReadAloud(text) {
+      const btn = document.getElementById('read-btn');
+      if (speaking) {
+        window.speechSynthesis.cancel();
+        speaking = false;
+        btn.textContent = '🔊 Read aloud';
+        btn.classList.remove('speaking');
+      } else {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.pitch = 1.1;
+        utterance.onend = () => {
+          speaking = false;
+          btn.textContent = '🔊 Read aloud';
+          btn.classList.remove('speaking');
+        };
+        window.speechSynthesis.speak(utterance);
+        speaking = true;
+        btn.textContent = '⏹ Stop reading';
+        btn.classList.add('speaking');
+      }
+    }
+
+    loadStory();
+  </script>
+
+</body>
+</html>
