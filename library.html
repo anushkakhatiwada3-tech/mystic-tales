@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,13 +18,11 @@
     </ul>
   </nav>
 
-  <!-- HEADER -->
   <section style="text-align:center; padding: 3rem 2rem 2rem; background: linear-gradient(135deg, #ccfbf1 0%, #e0f2fe 100%);">
     <h1 style="font-size: 2.2rem; color: #134e4a; margin-bottom: 0.5rem;">✦ Story Library</h1>
     <p style="color: #5f9ea0; font-size: 1rem;">Discover enchanting tales for every age</p>
   </section>
 
-  <!-- FILTERS -->
   <section style="background: #ffffff; border-bottom: 1px solid rgba(13,148,136,0.1); padding: 1rem 2rem; position: sticky; top: 65px; z-index: 90;">
     <div style="max-width:1100px; margin:0 auto; display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
       <span style="font-size:0.85rem; color:#5f9ea0; font-weight:600;">Filter by age:</span>
@@ -36,7 +33,6 @@
     </div>
   </section>
 
-  <!-- STORIES -->
   <section class="section">
     <div class="stories-grid" id="stories-container">
       <div class="loading">Summoning stories...</div>
@@ -70,7 +66,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
   <script>
-   const emojis = { fantasy: '🌟', magic: '✨', wonder: '🌊', adventure: '⚔️' };
+    const emojis = { fantasy: '🌟', magic: '✨', wonder: '🌊', adventure: '⚔️' };
     const ageLabels = { all: 'All ages', toddler: 'Ages 2–4', early: 'Ages 5–7', middle: 'Ages 8–12' };
     let allStories = [];
 
@@ -87,6 +83,7 @@
 
       allStories = data;
       renderStories(data);
+      loadCommunityStories();
     }
 
     function renderStories(stories) {
@@ -97,8 +94,10 @@
       }
       container.innerHTML = stories.map(story => `
         <a href="reader.html?id=${story.id}" class="story-card">
-          <div class="story-card-cover">
-            ${emojis[story.genre] || '📖'}
+          <div class="story-card-cover" style="padding:0;">
+            ${story.cover_image_url
+              ? `<img src="${story.cover_image_url}" alt="${story.title}" style="width:100%; height:160px; object-fit:cover;" />`
+              : `<span style="font-size:3rem;">${emojis[story.genre] || '📖'}</span>`}
           </div>
           <div class="story-card-body">
             <h3 class="story-card-title">${story.title}</h3>
@@ -110,137 +109,35 @@
       `).join('');
     }
 
-    function filterStories(age, btn) {
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      if (age === 'all') {
-        renderStories(allStories);
-      } else {
-        renderStories(allStories.filter(s => s.age_group === age || s.age_group === 'all'));
-      }
-    }
-
-    // Check for age param in URL
-    const urlAge = new URLSearchParams(window.location.search).get('age');
-    loadStories().then(() => {
-      if (urlAge) {
-        const btn = document.querySelector(`.filter-btn[onclick*="${urlAge}"]`);
-        if (btn) filterStories(urlAge, btn);
-      }
-    });
-  </script>
-
-</body>
-=======
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Story Library — Mystic Tales</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-
-  <nav>
-    <a href="index.html" class="logo">✦ Mystic Tales</a>
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="library.html" class="active">Library</a></li>
-      <li><a href="create.html">Create</a></li>
-      <li><a href="about.html">About</a></li>
-    </ul>
-  </nav>
-
-  <!-- HEADER -->
-  <section style="text-align:center; padding: 3rem 2rem 2rem; background: linear-gradient(135deg, #ccfbf1 0%, #e0f2fe 100%);">
-    <h1 style="font-size: 2.2rem; color: #134e4a; margin-bottom: 0.5rem;">✦ Story Library</h1>
-    <p style="color: #5f9ea0; font-size: 1rem;">Discover enchanting tales for every age</p>
-  </section>
-
-  <!-- FILTERS -->
-  <section style="background: #ffffff; border-bottom: 1px solid rgba(13,148,136,0.1); padding: 1rem 2rem; position: sticky; top: 65px; z-index: 90;">
-    <div style="max-width:1100px; margin:0 auto; display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
-      <span style="font-size:0.85rem; color:#5f9ea0; font-weight:600;">Filter by age:</span>
-      <button class="filter-btn active" onclick="filterStories('all', this)">All ages</button>
-      <button class="filter-btn" onclick="filterStories('toddler', this)">Toddlers 2–4</button>
-      <button class="filter-btn" onclick="filterStories('early', this)">Early readers 5–7</button>
-      <button class="filter-btn" onclick="filterStories('middle', this)">Middle kids 8–12</button>
-    </div>
-  </section>
-
-  <!-- STORIES -->
-  <section class="section">
-    <div class="stories-grid" id="stories-container">
-      <div class="loading">Summoning stories...</div>
-    </div>
-  </section>
-
-  <footer>
-    <p>✦ Mystic Tales — Where stories come alive ✦</p>
-  </footer>
-
-  <style>
-    .filter-btn {
-      padding: 6px 16px;
-      border-radius: 50px;
-      border: 1.5px solid rgba(13,148,136,0.3);
-      background: transparent;
-      color: #0d9488;
-      font-family: 'Nunito', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .filter-btn:hover, .filter-btn.active {
-      background: #0d9488;
-      color: white;
-      border-color: #0d9488;
-    }
-  </style>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase.js"></script>
-  <script>
-   const emojis = { fantasy: '🌟', magic: '✨', wonder: '🌊', adventure: '⚔️' };
-    const ageLabels = { all: 'All ages', toddler: 'Ages 2–4', early: 'Ages 5–7', middle: 'Ages 8–12' };
-    let allStories = [];
-
-    async function loadStories() {
+    async function loadCommunityStories() {
       const { data, error } = await db
-        .from('stories')
+        .from('created_stories')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(6);
 
-      if (error) {
-        document.getElementById('stories-container').innerHTML = '<p class="empty">Could not load stories.</p>';
-        return;
-      }
+      if (error || !data || !data.length) return;
 
-      allStories = data;
-      renderStories(data);
-    }
-
-    function renderStories(stories) {
-      const container = document.getElementById('stories-container');
-      if (!stories.length) {
-        container.innerHTML = '<p class="empty">No stories found for this age group.</p>';
-        return;
-      }
-      container.innerHTML = stories.map(story => `
-        <a href="reader.html?id=${story.id}" class="story-card">
-          <div class="story-card-cover">
-            ${emojis[story.genre] || '📖'}
-          </div>
-          <div class="story-card-body">
-            <h3 class="story-card-title">${story.title}</h3>
-            <p class="story-card-meta" style="margin-bottom:0.5rem;">By ${story.author}</p>
-            <span class="age-badge age-${story.age_group}">${ageLabels[story.age_group]}</span>
-            ${story.featured ? '<span style="margin-left:6px; font-size:0.7rem; color:#f97316; font-weight:700;">★ Featured</span>' : ''}
-          </div>
-        </a>
-      `).join('');
+      const section = document.createElement('div');
+      section.innerHTML = `
+        <h2 class="section-title" style="margin-top:2rem;">✦ Created by Readers</h2>
+        <div class="stories-grid">
+          ${data.map(s => `
+            <div class="story-card" style="cursor:default;">
+              <div class="story-card-cover" style="background:linear-gradient(135deg,#fff7ed,#fde68a);">
+                <span style="font-size:3rem;">✨</span>
+              </div>
+              <div class="story-card-body">
+                <h3 class="story-card-title">The Tale of ${s.hero_name}</h3>
+                <p class="story-card-meta" style="margin-bottom:0.5rem;">${s.magical_world}</p>
+                <span class="age-badge age-${s.age_group}">${s.age_group === 'toddler' ? 'Ages 2–4' : s.age_group === 'early' ? 'Ages 5–7' : 'Ages 8–12'}</span>
+                <span style="margin-left:6px; font-size:0.7rem; color:#f97316; font-weight:700;">★ Reader story</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      document.querySelector('.section').appendChild(section);
     }
 
     function filterStories(age, btn) {
@@ -253,7 +150,6 @@
       }
     }
 
-    // Check for age param in URL
     const urlAge = new URLSearchParams(window.location.search).get('age');
     loadStories().then(() => {
       if (urlAge) {
@@ -264,5 +160,4 @@
   </script>
 
 </body>
->>>>>>> aa533933d5fa0a282b7672a2606461e1fb878cc5
 </html>
