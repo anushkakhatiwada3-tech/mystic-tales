@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mystic Tales</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="logo">✦ Mystic Tales</a>
+    <ul>
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="library.html">Library</a></li>
+      <li><a href="create.html">Create</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+<section style="text-align:center; padding: 5rem 2rem 3rem; background: linear-gradient(135deg, #ccfbf1 0%, #e0f2fe 50%, #fff7ed 100%);">   
+    <p style="color: var(--teal); font-size: 0.9rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 1rem;">Where every child becomes a hero</p>
+<h1 style="font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 1.2rem; line-height: 1.2; color: #134e4a;">
+      Step Into a World of<br><span style="color: var(--coral);">Magic & Wonder</span> 
+
+<p style="color: #5f9ea0; font-size: 1.1rem; max-width: 520px; margin: 0 auto 2rem; font-family: 'Nunito', sans-serif; text-transform: none; letter-spacing: normal;">
+      Enchanting stories for children of all ages — read magical tales or create your very own adventure.
+    </p> 
+    <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+      <a href="library.html" class="btn btn-primary">Explore Stories</a>
+      <a href="create.html" class="btn btn-outline">Create a Story</a>
+    </div>
+  </section>
+
+  <!-- FEATURED STORIES -->
+  <section class="section">
+    <h2 class="section-title">✦ Featured Tales</h2>
+    <div class="stories-grid" id="featured-stories">
+      <div class="loading">Summoning stories...</div>
+    </div>
+    <div style="text-align:center; margin-top:2rem;">
+      <a href="library.html" class="btn btn-outline">View All Stories</a>
+    </div>
+  </section>
+
+  <!-- AGE GROUPS -->
+  <section style="background: var(--bg2); padding: 3rem 2rem;">
+    <div style="max-width:1100px; margin:0 auto;">
+      <h2 class="section-title">Find Stories For Your Age</h2>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;">
+        <a href="library.html?age=toddler" style="text-decoration:none;">
+          <div style="background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.5rem; text-align:center; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='none'">
+            <div style="font-size:2.5rem; margin-bottom:0.75rem;">🌙</div>
+            <h3 style="font-family:'Cinzel',serif; font-size:1rem; margin-bottom:0.4rem; color:var(--pink);">Toddlers</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted);">Ages 2–4</p>
+          </div>
+        </a>
+        <a href="library.html?age=early" style="text-decoration:none;">
+          <div style="background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.5rem; text-align:center; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='none'">
+            <div style="font-size:2.5rem; margin-bottom:0.75rem;">⭐</div>
+            <h3 style="font-family:'Cinzel',serif; font-size:1rem; margin-bottom:0.4rem; color:var(--amber);">Early Readers</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted);">Ages 5–7</p>
+          </div>
+        </a>
+        <a href="library.html?age=middle" style="text-decoration:none;">
+          <div style="background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.5rem; text-align:center; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='none'">
+            <div style="font-size:2.5rem; margin-bottom:0.75rem;">🐉</div>
+            <h3 style="font-family:'Cinzel',serif; font-size:1rem; margin-bottom:0.4rem; color:var(--purple);">Middle Kids</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted);">Ages 8–12</p>
+          </div>
+        </a>
+        <a href="library.html?age=all" style="text-decoration:none;">
+          <div style="background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.5rem; text-align:center; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='none'">
+            <div style="font-size:2.5rem; margin-bottom:0.75rem;">✨</div>
+            <h3 style="font-family:'Cinzel',serif; font-size:1rem; margin-bottom:0.4rem; color:var(--teal);">For Everyone</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted);">All ages</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>✦ Mystic Tales — Where stories come alive ✦</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script>
+   const emojis = { fantasy: '🌟', magic: '✨', wonder: '🌊', adventure: '⚔️' };
+    const ageLabels = { all: 'All ages', toddler: 'Ages 2–4', early: 'Ages 5–7', middle: 'Ages 8–12' };
+
+    async function loadFeatured() {
+      const { data, error } = await db
+        .from('stories')
+        .select('*')
+        .eq('featured', true)
+        .limit(3);
+
+      const container = document.getElementById('featured-stories');
+
+      if (error || !data.length) {
+        container.innerHTML = '<p class="empty">No stories found.</p>';
+        return;
+      }
+
+      container.innerHTML = data.map(story => `
+        <a href="reader.html?id=${story.id}" class="story-card">
+          <div class="story-card-cover">
+            ${emojis[story.genre] || '📖'}
+          </div>
+          <div class="story-card-body">
+            <h3 class="story-card-title">${story.title}</h3>
+            <p class="story-card-meta" style="margin-bottom:0.5rem;">By ${story.author}</p>
+            <span class="age-badge age-${story.age_group}">${ageLabels[story.age_group]}</span>
+          </div>
+        </a>
+      `).join('');
+    }
+
+    loadFeatured();
+  </script>
+
+</body>
+</html>
